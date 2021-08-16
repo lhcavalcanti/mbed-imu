@@ -123,9 +123,9 @@ int main()
         yaw = (180 / pi) * (atan((sqrt((Ax_f * Ax_f) + (Ay_f * Ay_f))) / Az_f)) - 3.93;
 
         // Convert gyroscope readings into degrees/s
-        Gx_f = Gx_f / 131.0;
-        Gy_f = Gy_f / 131.0;
-        Gz_f = Gz_f / 131.0;
+        Gx_f = Gx_f / 131.0; // 16.4
+        Gy_f = Gy_f / 131.0; // 16.4
+        Gz_f = Gz_f / 131.0; // 16.4
 
         // printf("Gyro(deg/s) X: %.3f Y: %.3f Z: %.3f || Accel(deg) Roll: %.3f, Pitch: %.3f, Yaw: %.3f \n", Gx_f, Gy_f, Gz_f, roll, pitch, yaw);
         printf("Gyro(deg/s) X: %.3f Y: %.3f Z: %.3f \n", Gx_f, Gy_f, Gz_f);
