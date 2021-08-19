@@ -195,6 +195,8 @@ void MPU6050::readAccelRaw(uint16_t *accReadings)
     accReadings[0] = (int)ACCEL_OUT_buffer[0] << 8 | (int)ACCEL_OUT_buffer[1];
     accReadings[1] = (int)ACCEL_OUT_buffer[2] << 8 | (int)ACCEL_OUT_buffer[3];
     accReadings[2] = (int)ACCEL_OUT_buffer[4] << 8 | (int)ACCEL_OUT_buffer[5];
+
+    printf("DEBUG 1: Accel(deg) X: %.3f Y: %.3f Z: %.3f \n", accReadings[0], accReadings[1], accReadings[2]);
 }
 
 void MPU6050::readAccel(double *accReadings)
@@ -202,9 +204,11 @@ void MPU6050::readAccel(double *accReadings)
 
     uint16_t accel[3] = {0, 0, 0};
     this->readAccelRaw(accel);
-    accReadings[0] = accel[0] / 2048.0;
-    accReadings[1] = accel[1] / 2048.0;
-    accReadings[2] = accel[2] / 2048.0;
+    printf("DEBUG 2: Accel(deg) X: %.3f Y: %.3f Z: %.3f \n", accel[0], accel[1], accel[2]);
+    accReadings[0] = ((int)accel[0]) / 2048.0;
+    accReadings[1] = ((int)accel[1]) / 2048.0;
+    accReadings[2] = ((int)accel[2]) / 2048.0;
+    printf("DEBUG 3: Accel(deg) X: %.3f Y: %.3f Z: %.3f \n", accReadings[0], accReadings[1], accReadings[2]);
 }
 
 void MPU6050::readTemp(uint16_t *TempReadings)
@@ -240,9 +244,9 @@ void MPU6050::readGyro(double *gyroReadings)
 
     uint16_t gyro[3] = {0, 0, 0};
     this->readGyroRaw(gyro);
-    gyroReadings[0] = gyro[0] / 16.4;
-    gyroReadings[1] = gyro[1] / 16.4;
-    gyroReadings[2] = gyro[2] / 16.4;
+    gyroReadings[0] = (int)gyro[0] / 16.4;
+    gyroReadings[1] = (int)gyro[1] / 16.4;
+    gyroReadings[2] = (int)gyro[2] / 16.4;
 }
 
 void MPU6050::sigPathReset(uint8_t ResVal)
