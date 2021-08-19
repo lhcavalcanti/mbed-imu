@@ -246,6 +246,8 @@ public:
      * @param scl - mbed pin to use for the SCL I2C line.
      */
     MPU6050(PinName sda, PinName scl);
+
+    void initialize();
     
     /**
      * Self-test permits users to test the mechanical and electrical portions of the MPU6050.
@@ -360,8 +362,16 @@ public:
      * @return Contents of Accelerometer measurement registers. 
      *         Array of ACCEL_XOUT, ACCEL_YOUT, ACCEL_ZOUT as 16-bit 2's complement values.
      */
-    void readAccel(uint16_t* AccReadings);
-    
+    void readAccelRaw(uint16_t *accReadings);
+
+    /**
+     * The most recent accelemometer measurements.
+     *
+     * @return Contents of Accelerometer measurement registers. 
+     *         Array of ACCEL_XOUT, ACCEL_YOUT, ACCEL_ZOUT converted to g (m/(s*s)).
+     */
+    void readAccel(double *accReadings);
+
     /**
      * The most recent temperature measurements.
      *
@@ -376,7 +386,15 @@ public:
      * @return Contents of Gyroscope measurement registers. 
      *         Array of GYRO_XOUT, GYRO_YOUT, GYRO_ZOUT as 16-bit 2's complement values.
      */
-    void readGyro(uint16_t* GyroReadings);
+    void readGyroRaw(uint16_t *gyroReadings);
+
+    /**
+     * The most recent gyroscope measurements.
+     *
+     * @return Contents of Gyroscope measurement registers. 
+     *         Array of GYRO_XOUT, GYRO_YOUT, GYRO_ZOUT as 16-bit 2's complement values.
+     */
+    void readGyro(double *gyroReadings);
 
     /**
      * Resets the analog and digital paths of the gyroscope, accelemometer and temperature sensors.

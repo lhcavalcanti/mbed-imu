@@ -5,7 +5,6 @@
 
 static BufferedSerial serial_port(USBTX, USBRX, 230400);
 
-//MPU6050 AccGyro(PTC2, PTC1); // Create an MPU object called AccGyro
 MPU6050 AccGyro(PF_0, PF_1); // Create an MPU object called AccGyro
 
 int16_t Ax, Ay, Az, Gx, Gy, Gz;
@@ -19,39 +18,10 @@ int main()
 
     uint16_t AccelReadings[3] = {0, 0, 0};
     uint16_t GyroReadings[3] = {0, 0, 0};
-    uint8_t DevId;
 
-    printf("Starting MPU6050 test...\n");
-    DevId = AccGyro.getWhoAmI();
+    AccGyro.initialize();
 
-    if (DevId == 0x68)
-    {
-        printf("\n");
-        printf("MPU6050 detected...\n");
-        printf("Device ID is: 0x%02x\n", DevId);
-        printf("\n");
-    }
-    else
-    {
-        printf("\n");
-        printf("MPU6050 not found...\n");
-        while (1)
-            ;
-    }
-
-    // The device will come up in sleep mode upon power-up.
-    AccGyro.setPowerCtl_1(0x00, 0x00, 0x00, 0x00, INT_8MHz_OSC); // Disable sleep mode
-    ThisThread::sleep_for(1ms);
-
-    // Full scale, +/-2000°/s, 16.4LSB°/s.
-    AccGyro.setGyroConfig(GYRO_ST_OFF, GFS_2000dps); // Gyroscope self-test trigger off.
-    ThisThread::sleep_for(1ms);
-
-    // Full scale, +/-16g, 2048LSB/g.
-    AccGyro.setAccelConfig(ACC_ST_OFF, AFS_16g); // Accelerometer self-test trigger off.
-    ThisThread::sleep_for(1ms);
-
-    while (true)
+        while (true)
     {
 
         ThisThread::sleep_for(200ms);
@@ -65,8 +35,8 @@ int main()
 
         for (int i = 0; i < 10; i = i + 1) // Take ten analog input readings
         {
-            AccGyro.readAccel(AccelReadings); // Extract accelerometer measurements
-            AccGyro.readGyro(GyroReadings);   // Extract gyroscope measurements
+            AccGyro.readAccelRaw(AccelReadings); // Extract accelerometer measurements
+            AccGyro.readGyroRaw(GyroReadings);   // Extract gyroscope measurements
 
             // 2s complement acclerometer and gyroscope values
             Ax = AccelReadings[0];
@@ -100,11 +70,12 @@ int main()
         yaw = (180 / pi) * (atan((sqrt((Ax_f * Ax_f) + (Ay_f * Ay_f))) / Az_f)) - 3.93;
 
         // Convert gyroscope readings into degrees/s
-        Gx_f = Gx_f / 131.0; // 16.4
-        Gy_f = Gy_f / 131.0; // 16.4
-        Gz_f = Gz_f / 131.0; // 16.4
+        Gx_f = Gx_f / 16.4;
+        Gy_f = Gy_f / 16.4;
+        Gz_f = Gz_f / 16.4;
 
         // printf("Gyro(deg/s) X: %.3f Y: %.3f Z: %.3f || Accel(deg) Roll: %.3f, Pitch: %.3f, Yaw: %.3f \n", Gx_f, Gy_f, Gz_f, roll, pitch, yaw);
         printf("Gyro(deg/s) X: %.3f Y: %.3f Z: %.3f \n", Gx_f, Gy_f, Gz_f);
+        printf("Accel(deg) X: %.3f Y: %.3f Z: %.3f |  X: %.3f Y: %.3f Z: %.3f \n", Ax_f, Ay_f, Az_f, Ax_f/2048.0, Ay_f/2048.0, Az_f/2048.0);
     }
 }
