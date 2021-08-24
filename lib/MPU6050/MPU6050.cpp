@@ -57,10 +57,12 @@ void MPU6050::initialize()
 
     // Full scale, +/-2000°/s, 16.4LSB°/s.
     this->setGyroConfig(GYRO_ST_OFF, GFS_2000dps); // Gyroscope self-test trigger off.
+    _gyro_scale = 16.4;
     ThisThread::sleep_for(1ms);
 
     // Full scale, +/-16g, 2048LSB/g.
     this->setAccelConfig(ACC_ST_OFF, AFS_16g); // Accelerometer self-test trigger off.
+    _accel_scale = 2048.0;
     ThisThread::sleep_for(1ms);
 }
 
@@ -180,9 +182,8 @@ uint8_t MPU6050::getFIFO_Enable(void)
     return (int)SingleByteRead(FIFO_EN_REG);
 }
 
-void MPU6050::readAccelRaw(uint16_t *accReadings)
+void MPU6050::readAccelRaw(int16_t *accReadings)
 {
-
     char ACCEL_OUT_buffer[6];
 
     ACCEL_OUT_buffer[0] = SingleByteRead(ACCEL_XOUT_H_REG);
@@ -195,23 +196,20 @@ void MPU6050::readAccelRaw(uint16_t *accReadings)
     accReadings[0] = (int)ACCEL_OUT_buffer[0] << 8 | (int)ACCEL_OUT_buffer[1];
     accReadings[1] = (int)ACCEL_OUT_buffer[2] << 8 | (int)ACCEL_OUT_buffer[3];
     accReadings[2] = (int)ACCEL_OUT_buffer[4] << 8 | (int)ACCEL_OUT_buffer[5];
-
-    printf("DEBUG 1: Accel(deg) X: %.3f Y: %.3f Z: %.3f \n", accReadings[0], accReadings[1], accReadings[2]);
 }
 
 void MPU6050::readAccel(double *accReadings)
 {
 
-    uint16_t accel[3] = {0, 0, 0};
+    int16_t accel[3] = {0, 0, 0};
     this->readAccelRaw(accel);
-    printf("DEBUG 2: Accel(deg) X: %.3f Y: %.3f Z: %.3f \n", accel[0], accel[1], accel[2]);
-    accReadings[0] = ((int)accel[0]) / 2048.0;
-    accReadings[1] = ((int)accel[1]) / 2048.0;
-    accReadings[2] = ((int)accel[2]) / 2048.0;
-    printf("DEBUG 3: Accel(deg) X: %.3f Y: %.3f Z: %.3f \n", accReadings[0], accReadings[1], accReadings[2]);
+    
+    accReadings[0] = ((int)accel[0]) / _accel_scale;
+    accReadings[1] = ((int)accel[1]) / _accel_scale;
+    accReadings[2] = ((int)accel[2]) / _accel_scale;
 }
 
-void MPU6050::readTemp(uint16_t *TempReadings)
+void MPU6050::readTemp(int16_t *TempReadings)
 {
 
     char TEMP_OUT_buffer[2];
@@ -222,7 +220,7 @@ void MPU6050::readTemp(uint16_t *TempReadings)
     TempReadings[0] = (int)TEMP_OUT_buffer[0] << 8 | (int)TEMP_OUT_buffer[1];
 }
 
-void MPU6050::readGyroRaw(uint16_t *gyroReadings)
+void MPU6050::readGyroRaw(int16_t *gyroReadings)
 {
 
     char GYRO_OUT_buffer[6];
@@ -242,11 +240,11 @@ void MPU6050::readGyroRaw(uint16_t *gyroReadings)
 void MPU6050::readGyro(double *gyroReadings)
 {
 
-    uint16_t gyro[3] = {0, 0, 0};
+    int16_t gyro[3] = {0, 0, 0};
     this->readGyroRaw(gyro);
-    gyroReadings[0] = (int)gyro[0] / 16.4;
-    gyroReadings[1] = (int)gyro[1] / 16.4;
-    gyroReadings[2] = (int)gyro[2] / 16.4;
+    gyroReadings[0] = (int)gyro[0] / _gyro_scale;
+    gyroReadings[1] = (int)gyro[1] / _gyro_scale;
+    gyroReadings[2] = (int)gyro[2] / _gyro_scale;
 }
 
 void MPU6050::sigPathReset(uint8_t ResVal)

@@ -362,7 +362,7 @@ public:
      * @return Contents of Accelerometer measurement registers. 
      *         Array of ACCEL_XOUT, ACCEL_YOUT, ACCEL_ZOUT as 16-bit 2's complement values.
      */
-    void readAccelRaw(uint16_t *accReadings);
+    void readAccelRaw(int16_t *accReadings);
 
     /**
      * The most recent accelemometer measurements.
@@ -378,7 +378,7 @@ public:
      * @return TempReadings - Contents Temperature measurement registers. 
      *         TEMP_OUT as 16-bit 2's complement value.
      */
-    void readTemp(uint16_t* TempReadings);
+    void readTemp(int16_t* TempReadings);
     
     /**
      * The most recent gyroscope measurements.
@@ -386,7 +386,7 @@ public:
      * @return Contents of Gyroscope measurement registers. 
      *         Array of GYRO_XOUT, GYRO_YOUT, GYRO_ZOUT as 16-bit 2's complement values.
      */
-    void readGyroRaw(uint16_t *gyroReadings);
+    void readGyroRaw(int16_t *gyroReadings);
 
     /**
      * The most recent gyroscope measurements.
@@ -495,6 +495,8 @@ public:
 private:
 
     I2C i2c_;
+    double _accel_scale = 2048.0;
+    double _gyro_scale = 16.4;
 
     /**
      * Read one byte from a register on the device.
